@@ -1,0 +1,17 @@
+[package]
+name = "rsc-mdx"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+async-recursion = "1.0.5"
+async-trait = "0.1.73"
+comrak = "0.18.0"
+frontmatter = "0.4.0"
+html_parser = "0.7.0"
+rscx = "0.1.2"
+
+[dev-dependencies]
+tokio = "1.32.0"
