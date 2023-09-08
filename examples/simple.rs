@@ -22,7 +22,7 @@ This is a **markdown** file with some *content*, but also custom RSCx components
 "#;
 
     let res = html! {
-        <Mdx source=source.into() handler=handle />
+        <Mdx source=source handler=handle />
     };
 
     println!("{}", res);

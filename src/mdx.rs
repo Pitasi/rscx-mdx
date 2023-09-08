@@ -8,6 +8,7 @@ use crate::markdown::parse;
 
 #[props]
 pub struct MdxProps {
+    #[builder(setter(into))]
     pub source: String,
     #[builder(setter(into))]
     pub handler: Box<dyn Handler + Send + Sync>,
