@@ -2,14 +2,25 @@ use async_recursion::async_recursion;
 use async_trait::async_trait;
 use html_parser::{Dom, Element};
 use rscx::{component, props};
-use std::{collections::HashMap, sync::Arc};
+use std::{collections::HashMap, future::Future, sync::Arc};
 
 use crate::markdown::parse;
 
 #[props]
 pub struct MdxProps {
     pub source: String,
+    #[builder(setter(into))]
     pub handler: Box<dyn Handler + Send + Sync>,
+}
+
+impl<F, Fut> From<F> for Box<(dyn Handler + Send + Sync + 'static)>
+where
+    F: Fn(String, MdxComponentProps) -> Fut + Send + Sync + 'static,
+    Fut: Future<Output = String> + Send + Sync + 'static,
+{
+    fn from(handler: F) -> Self {
+        Box::new(handler)
+    }
 }
 
 #[component]
@@ -43,21 +54,17 @@ pub struct MdxComponentProps {
 #[async_trait]
 /// Handler is in charge of rendering custom components.
 pub trait Handler {
-    async fn handle(&self, component_name: &str, props: MdxComponentProps) -> String;
+    async fn handle(&self, component_name: String, props: MdxComponentProps) -> String;
 }
 
-impl Default for Box<dyn Handler + Send + Sync> {
-    fn default() -> Self {
-        struct DefaultHandler {}
-
-        #[async_trait]
-        impl Handler for DefaultHandler {
-            async fn handle(&self, _component_name: &str, _props: MdxComponentProps) -> String {
-                String::new()
-            }
-        }
-
-        Box::new(DefaultHandler {})
+#[async_trait]
+impl<T, Fut> Handler for T
+where
+    T: Fn(String, MdxComponentProps) -> Fut + Sync,
+    Fut: Future<Output = String> + Send + Sync,
+{
+    async fn handle(&self, component_name: String, props: MdxComponentProps) -> String {
+        (self)(component_name, props).await
     }
 }
 
@@ -82,7 +89,7 @@ pub async fn process_element(
     // Custom elements
     if is_component_tag_name(&el.name) {
         let cmp = custom_handler.handle(
-            &el.name,
+            el.name.clone(),
             MdxComponentProps {
                 id: el.id.clone(),
                 classes: el.classes.clone(),
