@@ -1,6 +1,6 @@
 [package]
 name = "rscx-mdx"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["Antonio Pitasi"]
 license = "MIT"
@@ -16,7 +16,7 @@ async-trait = "0.1.73"
 comrak = "0.18.0"
 frontmatter = "0.4.0"
 html_parser = "0.7.0"
-rscx = "0.1.5"
+rscx = "0.1.7"
 
 [dev-dependencies]
 tokio = "1.32.0"
