@@ -1,7 +1,7 @@
 use async_recursion::async_recursion;
 use async_trait::async_trait;
 use html_parser::{Dom, Element};
-use rscx::{component, props};
+use rscx::{component, html, props};
 use std::{collections::HashMap, future::Future, sync::Arc};
 
 use crate::markdown::parse;
@@ -102,7 +102,32 @@ pub async fn process_element(
     }
 
     // HTML elements
-    el.source_span.text.clone()
+
+    let mut attrs = el
+        .attributes
+        .iter()
+        .map(|(k, v)| {
+            if let Some(v) = v {
+                format!("{}=\"{}\"", k, v)
+            } else {
+                format!("{}", k)
+            }
+        })
+        .collect::<Vec<_>>();
+
+    if !el.classes.is_empty() {
+        attrs.push(format!("class=\"{}\"", el.classes.join(" ")));
+    }
+
+    if let Some(id) = &el.id {
+        attrs.push(format!("id=\"{}\"", id));
+    }
+
+    html! {
+        <{&el.name}{attrs.join(" ")}>
+            {child_views.join("")}
+        </{&el.name}>
+    }
 }
 
 fn is_component_tag_name(name: &str) -> bool {
