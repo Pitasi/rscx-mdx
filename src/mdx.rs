@@ -1,6 +1,6 @@
 use async_recursion::async_recursion;
 use async_trait::async_trait;
-use html_parser::{Dom, Element};
+use html_parser_rscx::{Dom, Element, Node};
 use rscx::{component, html, props};
 use std::{collections::HashMap, future::Future, sync::Arc};
 
@@ -77,10 +77,10 @@ pub async fn process_element(
     let mut child_views = vec![];
     for child in &el.children {
         match child {
-            html_parser::Node::Element(el_child) => {
+            Node::Element(el_child) => {
                 child_views.push(process_element(el_child, custom_handler.clone()).await);
             }
-            html_parser::Node::Text(text) => {
+            Node::Text(text) => {
                 child_views.push(text.clone());
             }
             _ => {}

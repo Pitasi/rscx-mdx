@@ -1,6 +1,6 @@
 [package]
 name = "rscx-mdx"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 authors = ["Antonio Pitasi"]
 license = "MIT"
@@ -15,7 +15,7 @@ async-recursion = "1.0.5"
 async-trait = "0.1.73"
 comrak = "0.18.0"
 frontmatter = "0.4.0"
-html_parser = { version = "0.7.0", git = "https://github.com/pitasi/html-parser" }
+html_parser_rscx = { version = "0.7.1" }
 rscx = "0.1.8"
 
 [dev-dependencies]
