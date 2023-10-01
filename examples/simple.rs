@@ -1,5 +1,5 @@
 use rscx::{component, html, props};
-use rscx_mdx::mdx::{Mdx, MdxComponentProps, MdxProps};
+use rscx_mdx::mdx::{Mdx, MdxComponentProps};
 
 #[tokio::main]
 async fn main() {

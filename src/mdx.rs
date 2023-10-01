@@ -1,18 +1,10 @@
 use async_recursion::async_recursion;
 use async_trait::async_trait;
 use html_parser_rscx::{Dom, Element, Node};
-use rscx::{component, html, props};
+use rscx::{component, html};
 use std::{collections::HashMap, future::Future, sync::Arc};
 
 use crate::markdown::parse;
-
-#[props]
-pub struct MdxProps {
-    #[builder(setter(into))]
-    pub source: String,
-    #[builder(setter(into))]
-    pub handler: Box<dyn Handler + Send + Sync>,
-}
 
 impl<F, Fut> From<F> for Box<(dyn Handler + Send + Sync + 'static)>
 where
@@ -27,12 +19,15 @@ where
 #[component]
 /// Renders a markdown source into a RSCx component.
 /// Custom components can be used in the markdown source.
-pub fn Mdx(props: MdxProps) -> String {
-    let (_fm, html) = parse(&props.source).expect("invalid mdx");
+pub fn Mdx(
+    #[builder(setter(into))] source: String,
+    #[builder(setter(into))] handler: Box<dyn Handler + Send + Sync>,
+) -> String {
+    let (_fm, html) = parse(&source).expect("invalid mdx");
     // TODO: we could expose frontmatter in the context so components can use its value
 
     let dom = Dom::parse(&html).expect("invalid html");
-    let handler = Arc::new(props.handler);
+    let handler = Arc::new(handler);
 
     let mut root_views = vec![];
     for node in dom.children {
